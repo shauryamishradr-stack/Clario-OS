@@ -934,6 +934,8 @@ async function doSearch(q) {
 }
 
 // ─── INTERNAL BROWSER LOGIC ──────────────────────────────────────────
+const BLOCKED_DOMAINS = ['duckduckgo.com', 'google.com', 'github.com', 'facebook.com', 'twitter.com', 'x.com', 'reddit.com', 'youtube.com', 'linkedin.com'];
+
 function openInternalBrowser(url, title) {
   const overlay = $('browserOverlay');
   const content = $('browserContent');
@@ -947,34 +949,41 @@ function openInternalBrowser(url, title) {
   content.innerHTML = '';
   fallback.classList.add('hidden');
 
+  const domain = new URL(url).hostname.toLowerCase().replace('www.', '');
+  const isKnownBlocked = BLOCKED_DOMAINS.some(d => domain.includes(d));
+
   if (Platform.isElectron) {
-    // In Electron, we interact with the main process to show a BrowserView
-    // For now, we simulate with a webview tag which is Electron-specific
+    // Electron allows all sites via webview
     content.innerHTML = `<webview src="${url}" style="width:100%; height:100%"></webview>`;
   } else if (Platform.isAndroid) {
-    // In Android WebView, we keep it in the same container
+    // Android WebView also typically allows most sites
     content.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
   } else {
-    // Web Browser: Use Iframe with X-Frame-Options detection
-    const frame = document.createElement('iframe');
-    frame.src = url;
-    frame.style.width = '100%';
-    frame.style.height = '100%';
-    frame.style.border = 'none';
+    // Web Browser: Check if known blocked
+    if (isKnownBlocked) {
+      showBrowserFallback(url);
+    } else {
+      const frame = document.createElement('iframe');
+      frame.src = url;
+      frame.style.width = '100%';
+      frame.style.height = '100%';
+      frame.style.border = 'none';
 
-    // Fallback timer for blocked iframes (simple heuristic)
-    const timeout = setTimeout(() => {
-      // We can't easily detect X-Frame-Options via JS, but we can show the fallback
-      // if the user hasn't successfully interacted or if it's a known blocked site
-    }, 3000);
+      // Heuristic: If we don't get any load event or interaction, the site might be blocked
+      const fallbackTimer = setTimeout(() => {
+        // We show a subtle hint that they can open externally if it's taking too long
+        toast('Site taking long to load? Try opening in workspace.', 'info');
+      }, 5000);
 
-    content.appendChild(frame);
+      frame.onload = () => clearTimeout(fallbackTimer);
+      content.appendChild(frame);
+    }
   }
 
   // Wire controls
   $('browserClose').onclick = () => {
     overlay.classList.add('hidden');
-    content.innerHTML = ''; // Clear to stop audio/scripts
+    content.innerHTML = '';
   };
   $('browserExternal').onclick = () => window.open(url, '_blank');
   $('browserReload').onclick = () => {
@@ -988,7 +997,7 @@ function openInternalBrowser(url, title) {
       if (Platform.isElectron) f.goBack();
       else f.contentWindow.history.back();
     } catch (e) {
-      toast('Navigation restricted by site', 'warn');
+      showBrowserFallback(url);
     }
   };
 
@@ -998,7 +1007,7 @@ function openInternalBrowser(url, title) {
       if (Platform.isElectron) f.goForward();
       else f.contentWindow.history.forward();
     } catch (e) {
-      toast('Navigation restricted by site', 'warn');
+      toast('Navigation restricted', 'warn');
     }
   };
 
@@ -1006,6 +1015,13 @@ function openInternalBrowser(url, title) {
     window.open(url, '_blank');
     overlay.classList.add('hidden');
   };
+}
+
+function showBrowserFallback(url) {
+  const fallback = $('browserFallback');
+  const content = $('browserContent');
+  if (fallback) fallback.classList.remove('hidden');
+  if (content) content.innerHTML = ''; // Clear the frame that failed
 }
 
 function openInSplit(url, title, favicon = '🌐') {
