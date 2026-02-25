@@ -251,9 +251,48 @@
         <!-- Results -->
         <div id="resultsArea" class="results-area hidden">
           <div class="results-meta" id="resultsMeta"></div>
+
+          <!-- AI OVERVIEW -->
+          <div id="aiOverview" class="ai-overview hidden"></div>
+
           <div id="resultsList" class="results-list"></div>
           <div id="resultsLoader" class="results-loader hidden">
-            <div class="loader-ring"></div>
+            <div class="loader-skeleton">
+              <div class="skeleton-item card"></div>
+              <div class="skeleton-item text"></div>
+              <div class="skeleton-item text short"></div>
+              <div class="skeleton-item card"></div>
+              <div class="skeleton-item text"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- BROWSER PREVIEW OVERLAY -->
+        <div id="browserOverlay" class="browser-overlay hidden">
+          <div class="browser-header">
+            <div class="browser-controls">
+              <button class="browser-btn" id="browserBack" title="Back">←</button>
+              <button class="browser-btn" id="browserForward" title="Forward">→</button>
+              <button class="browser-btn" id="browserReload" title="Reload">↺</button>
+              <div class="browser-url-display">
+                <span id="browserUrlText">https://example.com</span>
+              </div>
+            </div>
+            <div class="browser-actions">
+              <button class="browser-btn secondary" id="browserExternal" title="Open in New Tab">↗</button>
+              <button class="browser-btn close" id="browserClose">×</button>
+            </div>
+          </div>
+          <div class="browser-content" id="browserContent">
+            <!-- Iframe or WebView injected here -->
+          </div>
+          <div id="browserFallback" class="browser-fallback hidden">
+            <div class="fallback-card">
+              <div class="fallback-icon">⚠️</div>
+              <h3>Security Restriction</h3>
+              <p>This site cannot be previewed inside Clario due to its security policy (X-Frame-Options).</p>
+              <button class="btn btn-primary" id="fallbackOpenBtn">Open in New Tab</button>
+            </div>
           </div>
         </div>
       </section>

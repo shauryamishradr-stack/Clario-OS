@@ -2363,3 +2363,238 @@ kbd {
   border-color: var(--red);
   color: var(--red);
 }
+
+/* ════════════════════════════════════════════
+   AI OVERVIEW & SKELETONS
+   ════════════════════════════════════════════ */
+.ai-overview {
+  background: linear-gradient(135deg, rgba(108, 99, 255, 0.08) 0%, rgba(0, 0, 0, 0.3) 100%);
+  border: 1px solid rgba(108, 99, 255, 0.2);
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 24px;
+  animation: cardIn 0.4s ease backwards;
+  position: relative;
+  overflow: hidden;
+}
+
+.ai-overview::before {
+  content: 'AI Overview';
+  position: absolute;
+  top: 12px;
+  right: 16px;
+  font-size: 10px;
+  letter-spacing: 1px;
+  color: var(--accent);
+  opacity: 0.6;
+  text-transform: uppercase;
+}
+
+.ai-text {
+  font-size: 14px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+.ai-text strong {
+  color: var(--accent2);
+}
+
+.loader-skeleton {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.skeleton-item {
+  background: linear-gradient(90deg, var(--bg2) 25%, var(--bg3) 50%, var(--bg2) 75%);
+  background-size: 200% 100%;
+  animation: skeletonLoading 1.5s infinite;
+  border-radius: 8px;
+}
+
+.skeleton-item.card {
+  height: 80px;
+  border-radius: 12px;
+}
+
+.skeleton-item.text {
+  height: 14px;
+  width: 100%;
+}
+
+.skeleton-item.text.short {
+  width: 60%;
+}
+
+@keyframes skeletonLoading {
+  0% {
+    background-position: 200% 0;
+  }
+
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* ════════════════════════════════════════════
+   BROWSER OVERLAY (EMBEDDED BROWSER)
+   ════════════════════════════════════════════ */
+.browser-overlay {
+  position: fixed;
+  top: 60px;
+  /* Below topbar */
+  left: 280px;
+  /* Right of sidebar */
+  right: 0;
+  bottom: 0;
+  background: var(--bg);
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  box-shadow: -20px 0 60px rgba(0, 0, 0, 0.5);
+  animation: browserSlideIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), left 0.3s ease;
+}
+
+.sidebar-hidden .browser-overlay {
+  left: 0;
+}
+
+@keyframes browserSlideIn {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+.browser-header {
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 16px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  gap: 12px;
+}
+
+.browser-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.browser-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: 1px solid transparent;
+  color: var(--text2);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 16px;
+}
+
+.browser-btn:hover {
+  background: var(--surface2);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+.browser-btn.secondary {
+  font-size: 13px;
+}
+
+.browser-btn.close {
+  background: rgba(255, 77, 106, 0.1);
+  color: var(--red);
+  font-size: 20px;
+}
+
+.browser-btn.close:hover {
+  background: var(--red);
+  color: #fff;
+}
+
+.browser-url-display {
+  flex: 1;
+  max-width: 500px;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 11px;
+  color: var(--text3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: default;
+}
+
+.browser-content {
+  flex: 1;
+  position: relative;
+  background: #fff;
+}
+
+.browser-content iframe,
+.browser-content webview {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.browser-fallback {
+  position: absolute;
+  inset: 0;
+  background: var(--bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 40px;
+  text-align: center;
+  z-index: 10;
+}
+
+.fallback-card {
+  max-width: 400px;
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  padding: 32px;
+  border-radius: 20px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+}
+
+.fallback-icon {
+  font-size: 48px;
+  margin-bottom: 20px;
+}
+
+.fallback-card h3 {
+  margin-bottom: 12px;
+  color: var(--text);
+}
+
+.fallback-card p {
+  font-size: 13px;
+  color: var(--text2);
+  margin-bottom: 24px;
+}
+
+@media (max-width: 768px) {
+  .browser-overlay {
+    left: 0 !important;
+    top: 0;
+    z-index: 2000;
+  }
+}

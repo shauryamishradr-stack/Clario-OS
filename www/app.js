@@ -87,6 +87,19 @@ let secureInitial, secureLogin, secureTitle, secureSub, makeKeyBtn, verifyKeyBtn
 
 let isSignUpMode = false;
 
+// ─── PLATFORM DETECTION ──────────────────────────────────────────────
+const Platform = {
+  isElectron: /electron/i.test(navigator.userAgent),
+  isAndroid: /android/i.test(navigator.userAgent) && !window.chrome, // Simple check for WebView
+  isWeb: !(/electron/i.test(navigator.userAgent)) && !(/android/i.test(navigator.userAgent)),
+
+  getPlatformName() {
+    if (this.isElectron) return 'Electron';
+    if (this.isAndroid) return 'Android WebView';
+    return 'Web Browser';
+  }
+};
+
 window.addEventListener('DOMContentLoaded', () => {
   // Initialize all DOM references
   app = $('app');
@@ -132,8 +145,16 @@ window.addEventListener('DOMContentLoaded', () => {
   accountMenu = $('accountMenu');
   userAccountBtn = $('userAccountBtn');
 
+  // New Browser Overlay refs
+  this.browserOverlay = $('browserOverlay');
+  this.browserContent = $('browserContent');
+  this.browserUrlText = $('browserUrlText');
+  this.aiOverview = $('aiOverview');
+
   // Setup Auth & Account Logic
   initAuth();
+
+  console.log(`Clario OS v${Config.version} - Running on ${Platform.getPlatformName()}`);
 });
 
 // ─── CLOCK ─────────────────────────────────────────────────────────────
@@ -851,14 +872,26 @@ async function doSearch(q) {
 
   if (resultsArea) resultsArea.classList.remove('hidden');
   if (resultsList) resultsList.innerHTML = '';
+  if (aiOverview) aiOverview.classList.add('hidden');
   if (resultsLoader) resultsLoader.classList.remove('hidden');
   if (resultsMeta) resultsMeta.textContent = '';
 
   // Show search in topbar
   if (topbarInput) topbarInput.value = q;
 
-  // A short delay to show loader
-  await new Promise(r => setTimeout(r, 600));
+  // Simulate AI Thinking + Search Loading
+  await new Promise(r => setTimeout(r, 800));
+
+  // AI OVERVIEW SIMULATION
+  if (aiOverview) {
+    aiOverview.innerHTML = `
+      <div class="ai-text">
+        <p>I found several interesting things about <strong>${q}</strong>. It appears to be a topic related to modern technology and workflow optimization. 
+        Most users searching for this are looking for specific tutorials or reference documentation.</p>
+      </div>
+    `;
+    aiOverview.classList.remove('hidden');
+  }
 
   const results = getDemoResults(q);
   State.results = results;
@@ -880,28 +913,99 @@ async function doSearch(q) {
       <div class="result-title">${r.title}</div>
       <div class="result-snippet">${r.snippet}</div>
       <div class="result-actions">
-        <button class="result-action-btn" data-url="${r.url}">Open in Tab</button>
-        <button class="result-action-btn" data-url="${r.url}" data-split="1">Open in Split</button>
-        <button class="result-action-btn" data-float="${r.url}">Float</button>
+        <button class="result-action-btn" data-url="${r.url}">Preview</button>
+        <button class="result-action-btn" data-url="${r.url}" data-workspace="1">In Workspace</button>
       </div>
     `;
 
     card.addEventListener('click', e => {
       const btn = e.target.closest('.result-action-btn');
       if (btn) {
-        if (btn.dataset.float) {
-          showFloating(r.title, r.url); return;
+        if (btn.dataset.workspace) {
+          openUrlInTab(btn.dataset.url, r.title, r.favicon); return;
         }
-        if (btn.dataset.split) {
-          openInSplit(btn.dataset.url, r.title, r.favicon); return;
-        }
-        openUrlInTab(btn.dataset.url, r.title, r.favicon); return;
+        openInternalBrowser(r.url, r.title); return;
       }
-      openUrlInTab(r.url, r.title, r.favicon);
+      openInternalBrowser(r.url, r.title);
     });
 
     if (resultsList) resultsList.appendChild(card);
   });
+}
+
+// ─── INTERNAL BROWSER LOGIC ──────────────────────────────────────────
+function openInternalBrowser(url, title) {
+  const overlay = $('browserOverlay');
+  const content = $('browserContent');
+  const fallback = $('browserFallback');
+  const urlText = $('browserUrlText');
+
+  if (!overlay || !content) return;
+
+  urlText.textContent = url;
+  overlay.classList.remove('hidden');
+  content.innerHTML = '';
+  fallback.classList.add('hidden');
+
+  if (Platform.isElectron) {
+    // In Electron, we interact with the main process to show a BrowserView
+    // For now, we simulate with a webview tag which is Electron-specific
+    content.innerHTML = `<webview src="${url}" style="width:100%; height:100%"></webview>`;
+  } else if (Platform.isAndroid) {
+    // In Android WebView, we keep it in the same container
+    content.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
+  } else {
+    // Web Browser: Use Iframe with X-Frame-Options detection
+    const frame = document.createElement('iframe');
+    frame.src = url;
+    frame.style.width = '100%';
+    frame.style.height = '100%';
+    frame.style.border = 'none';
+
+    // Fallback timer for blocked iframes (simple heuristic)
+    const timeout = setTimeout(() => {
+      // We can't easily detect X-Frame-Options via JS, but we can show the fallback
+      // if the user hasn't successfully interacted or if it's a known blocked site
+    }, 3000);
+
+    content.appendChild(frame);
+  }
+
+  // Wire controls
+  $('browserClose').onclick = () => {
+    overlay.classList.add('hidden');
+    content.innerHTML = ''; // Clear to stop audio/scripts
+  };
+  $('browserExternal').onclick = () => window.open(url, '_blank');
+  $('browserReload').onclick = () => {
+    const f = content.querySelector('iframe, webview');
+    if (f) f.src = f.src;
+  };
+
+  $('browserBack').onclick = () => {
+    const f = content.querySelector('iframe, webview');
+    try {
+      if (Platform.isElectron) f.goBack();
+      else f.contentWindow.history.back();
+    } catch (e) {
+      toast('Navigation restricted by site', 'warn');
+    }
+  };
+
+  $('browserForward').onclick = () => {
+    const f = content.querySelector('iframe, webview');
+    try {
+      if (Platform.isElectron) f.goForward();
+      else f.contentWindow.history.forward();
+    } catch (e) {
+      toast('Navigation restricted by site', 'warn');
+    }
+  };
+
+  $('fallbackOpenBtn').onclick = () => {
+    window.open(url, '_blank');
+    overlay.classList.add('hidden');
+  };
 }
 
 function openInSplit(url, title, favicon = '🌐') {
