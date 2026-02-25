@@ -1,0 +1,11 @@
+{
+    "appId": "com.shaur.clario",
+    "appName": "Clario OS",
+    "webDir": "www",
+    "bundledWebRuntime": false,
+    "server": {
+        "allowNavigation": [
+            "*"
+        ]
+    }
+}

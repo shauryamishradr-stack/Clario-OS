@@ -1,0 +1,10 @@
+[build]
+  publish = "."
+
+# Custom headers for iframe support (though many sites block at their end)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"

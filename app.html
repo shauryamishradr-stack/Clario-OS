@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Clario — Futuristic Workspace OS</title>
+  <meta name="description" content="A next-generation ad-free search engine and smart workspace inside your browser." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+
+  <!-- PWA & iOS Support -->
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#000000">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Clario">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+</head>
+
+<body>
+
+  <!-- ─────────────────────── BOOT SCREEN ─────────────────────── -->
+  <div id="boot-screen">
+    <div class="boot-logo">
+      <div class="boot-icon">N</div>
+      <span class="boot-name">Clario</span>
+    </div>
+    <div class="boot-bar-wrap">
+      <div class="boot-bar"></div>
+    </div>
+    <p class="boot-sub">Initializing workspace…</p>
+  </div>
+
+  <!-- ─────────────────────── APP SHELL ─────────────────────── -->
+  <div id="app" class="hidden">
+
+    <!-- TOP NAV -->
+    <header id="topbar">
+      <div class="topbar-left">
+        <div class="logo" id="logoBtn" title="Toggle Sidebar">
+          <span class="logo-icon">N</span>
+          <span class="logo-text">Clario</span>
+        </div>
+        <!-- Mode Toggle -->
+        <div class="mode-toggle">
+          <button class="mode-btn active" id="searchModeBtn" title="Search Mode">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            Search
+          </button>
+          <button class="mode-btn" id="workspaceModeBtn" title="Workspace Mode">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7" />
+              <rect x="14" y="3" width="7" height="7" />
+              <rect x="3" y="14" width="7" height="7" />
+              <rect x="14" y="14" width="7" height="7" />
+            </svg>
+            Workspace
+          </button>
+        </div>
+      </div>
+      <div class="topbar-center" id="topbarSearch" style="display:none">
+        <div class="mini-search-wrap">
+          <svg class="mini-search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+          <input id="topbarInput" type="text" placeholder="Search anything…" autocomplete="off" />
+        </div>
+      </div>
+      <div class="topbar-right">
+        <button class="icon-btn" id="focusModeBtn" title="Focus Mode (F)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3" />
+          </svg>
+        </button>
+        <button class="icon-btn" id="splitBtn" title="Split View (S)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" />
+            <line x1="12" y1="3" x2="12" y2="21" />
+          </svg>
+        </button>
+        <button class="icon-btn cmd-btn" id="cmdBtn" title="Command Palette (Ctrl+K)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path
+              d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z" />
+          </svg>
+        </button>
+        <button class="icon-btn upgrade-btn" id="upgradeBtn" title="Upgrade to Clario Pro">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+          </svg>
+          Pro
+        </button>
+        <button class="icon-btn" id="userAccountBtn" title="Account Settings">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+            <circle cx="12" cy="7" r="4" />
+          </svg>
+        </button>
+        <div class="time-display" id="clockDisplay">00:00</div>
+      </div>
+    </header>
+
+    <!-- SIDEBAR -->
+    <aside id="sidebar" class="sidebar">
+      <div class="sidebar-section">
+        <div class="sidebar-title">WORKSPACES</div>
+        <div class="preset-list">
+          <button class="preset-btn active" data-preset="general" title="General">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 8v4l3 3" />
+            </svg>
+            General
+          </button>
+          <button class="preset-btn" data-preset="study" title="Study Mode">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+              <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+            </svg>
+            Study
+          </button>
+          <button class="preset-btn" data-preset="research" title="Research Mode">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="11" cy="11" r="8" />
+              <path d="m21 21-4.35-4.35" />
+            </svg>
+            Research
+          </button>
+          <button class="preset-btn" data-preset="build" title="Build Mode">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 18 22 12 16 6" />
+              <polyline points="8 6 2 12 8 18" />
+            </svg>
+            Build
+          </button>
+        </div>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">TAB GROUPS</div>
+        <div id="groupList"></div>
+        <button class="add-group-btn" id="addGroupBtn">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+          </svg>
+          New Group
+        </button>
+      </div>
+      <div class="sidebar-section">
+        <div class="sidebar-title">OPEN TABS</div>
+        <div class="tab-search-wrap">
+          <input type="text" id="tabSearch" placeholder="Search tabs…" autocomplete="off" />
+        </div>
+        <div id="sidebarTabList"></div>
+      </div>
+    </aside>
+
+    <!-- MAIN CONTENT AREA -->
+    <main id="mainArea">
+
+      <!-- ── SEARCH MODE ── -->
+      <section id="searchView" class="view active">
+        <div class="search-hero">
+          <div class="hero-logo">
+            <div class="hero-icon">N</div>
+            <h1 class="hero-title">Clario</h1>
+            <p class="hero-sub">The ad-free, distraction-free search engine</p>
+          </div>
+          <div class="search-bar-wrap" id="searchBarWrap">
+            <div class="search-bar">
+              <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                stroke-width="2">
+                <circle cx="11" cy="11" r="8" />
+                <path d="m21 21-4.35-4.35" />
+              </svg>
+              <input id="searchInput" type="text" placeholder="Search the web, no ads, no tracking…" autocomplete="off"
+                spellcheck="false" />
+              <button class="search-clear" id="searchClear" title="Clear">×</button>
+              <button class="search-go" id="searchGo">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <line x1="5" y1="12" x2="19" y2="12" />
+                  <polyline points="12 5 19 12 12 19" />
+                </svg>
+              </button>
+            </div>
+            <div id="suggestions" class="suggestions-box"></div>
+          </div>
+          <div class="search-shortcuts">
+            <button class="shortcut-chip" data-q="latest news">📰 News</button>
+            <button class="shortcut-chip" data-q="trending technology">⚡ Tech</button>
+            <button class="shortcut-chip" data-q="learn programming">💻 Code</button>
+            <button class="shortcut-chip" data-q="science discoveries">🔬 Science</button>
+            <button class="shortcut-chip" data-q="design inspiration">🎨 Design</button>
+          </div>
+        </div>
+        <!-- Results -->
+        <div id="resultsArea" class="results-area hidden">
+          <div class="results-meta" id="resultsMeta"></div>
+          <div id="resultsList" class="results-list"></div>
+          <div id="resultsLoader" class="results-loader hidden">
+            <div class="loader-ring"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ── WORKSPACE MODE ── -->
+      <section id="workspaceView" class="view">
+        <!-- Tab Bar -->
+        <div id="tabBar" class="tab-bar">
+          <div id="tabList" class="tab-list"></div>
+          <button class="new-tab-btn" id="newTabBtn" title="New Tab (Ctrl+T)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19" />
+              <line x1="5" y1="12" x2="19" y2="12" />
+            </svg>
+          </button>
+        </div>
+        <!-- Panels -->
+        <div id="panelsContainer" class="panels-container">
+          <div id="panel1" class="panel"></div>
+          <div id="splitHandle" class="split-handle hidden"></div>
+          <div id="panel2" class="panel hidden"></div>
+        </div>
+      </section>
+
+    </main>
+
+  </div><!-- /#app -->
+
+  <!-- ─────────────────────── COMMAND PALETTE ─────────────────────── -->
+  <div id="cmdPalette" class="cmd-palette hidden">
+    <div class="cmd-backdrop"></div>
+    <div class="cmd-modal">
+      <div class="cmd-input-wrap">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path
+            d="M18 3a3 3 0 0 0-3 3v12a3 3 0 0 0 3 3 3 3 0 0 0 3-3 3 3 0 0 0-3-3H6a3 3 0 0 0-3 3 3 3 0 0 0 3 3 3 3 0 0 0 3-3V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3h12a3 3 0 0 0 3-3 3 3 0 0 0-3-3z" />
+        </svg>
+        <input id="cmdInput" type="text" placeholder="Type a command or search…" autocomplete="off" />
+        <kbd>ESC</kbd>
+      </div>
+      <div id="cmdResults" class="cmd-results"></div>
+      <div class="cmd-footer">
+        <span><kbd>↑↓</kbd> Navigate</span>
+        <span><kbd>↵</kbd> Execute</span>
+        <span><kbd>ESC</kbd> Close</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────── CONTEXT MENU ─────────────────────── -->
+  <div id="contextMenu" class="context-menu hidden">
+    <button class="ctx-item" id="ctxNewGroup">Add to Group</button>
+    <button class="ctx-item" id="ctxDuplicate">Duplicate Tab</button>
+    <button class="ctx-item" id="ctxPin">Pin Tab</button>
+    <hr class="ctx-sep" />
+    <button class="ctx-item danger" id="ctxClose">Close Tab</button>
+  </div>
+
+  <!-- ─────────────────────── FLOATING PANEL ─────────────────────── -->
+  <div id="floatPanel" class="float-panel hidden">
+    <div class="float-header">
+      <span id="floatTitle">Floating Panel</span>
+      <div class="float-controls">
+        <button class="float-btn" id="floatMinBtn">─</button>
+        <button class="float-btn" id="floatCloseBtn">×</button>
+      </div>
+    </div>
+    <div class="float-body" id="floatBody"></div>
+  </div>
+
+  <!-- ─────────────────────── PRO UPGRADE MODAL ─────────────────────── -->
+  <div id="proModal" class="pro-modal hidden">
+    <div class="pro-backdrop"></div>
+    <div class="pro-card">
+      <div class="pro-header">
+        <div class="pro-badge">CLARIO PRO</div>
+        <h2>Unlock the Future of Focus</h2>
+      </div>
+      <div class="pro-features">
+        <div class="pro-feature">
+          <div class="pro-feature-icon">☁️</div>
+          <div class="pro-feature-text">
+            <h3>Cloud Sync</h3>
+            <p>Access your workspaces on any device instantly.</p>
+          </div>
+        </div>
+        <div class="pro-feature">
+          <div class="pro-feature-icon">🤖</div>
+          <div class="pro-feature-text">
+            <h3>AI Sidekick</h3>
+            <p>Summarize and research with AI inside your panels.</p>
+          </div>
+        </div>
+        <div class="pro-feature">
+          <div class="pro-feature-icon">🎨</div>
+          <div class="pro-feature-text">
+            <h3>Unlimited Themes</h3>
+            <p>Full control over glassmorphism and accent colors.</p>
+          </div>
+        </div>
+      </div>
+      <div class="pro-pricing">
+        <div class="price">$5<span>/mo</span></div>
+        <p>Cancel anytime. Secure checkout by Stripe.</p>
+      </div>
+      <button class="pro-upgrade-btn" id="proCheckoutBtn">Start Free Trial</button>
+      <button class="pro-close-link" id="proCloseBtn">Maybe later</button>
+    </div>
+  </div>
+
+  <!-- ─────────────────────── TOAST ─────────────────────── -->
+  <div id="toastContainer" class="toast-container"></div>
+
+  <!-- ─────────────────────── SECURE ACCESS MODAL ─────────────────────── -->
+  <div id="authModal" class="auth-modal hidden">
+    <div class="auth-backdrop"></div>
+    <div class="auth-card secure-access">
+      <div class="secure-token-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+          <path d="M12 8v4M12 16h.01" />
+        </svg>
+      </div>
+      <h2 id="secureTitle">Secure Access</h2>
+      <p id="secureSub">Verification required to unlock Clario Executive</p>
+
+      <div id="secureInitial" class="secure-step">
+        <div class="biometric-ring">
+          <div class="scanner-line"></div>
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+            <path d="M2 12c0-5.523 4.477-10 10-10s10 4.477 10 10-4.477 10-10 10-10-4.477-10-10z" opacity="0.1" />
+            <path d="M12 7v10M9 12h6" stroke-width="2" />
+          </svg>
+        </div>
+        <button id="makeKeyBtn" class="secure-btn-primary">Generate Master Key</button>
+        <p class="secure-hint">This device will be registered as your hardware token</p>
+      </div>
+
+      <div id="secureLogin" class="secure-step hidden">
+        <div class="biometric-ring pulse">
+          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="gold" stroke-width="1.5">
+            <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" />
+            <path d="M12 8v4l3 3" />
+          </svg>
+        </div>
+        <button id="verifyKeyBtn" class="secure-btn-gold">Authorize Session</button>
+        <p class="secure-hint">Touch sensor or use hardware key</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ─────────────────────── ACCOUNT MENU ─────────────────────── -->
+  <div id="accountMenu" class="account-popup hidden">
+    <div class="account-header">
+      <div class="user-avatar" id="userAvatar">U</div>
+      <div class="user-info">
+        <div class="user-email" id="displayEmail">Not Signed In</div>
+        <div class="user-status" id="displayStatus">Free User</div>
+      </div>
+    </div>
+    <div class="account-actions">
+      <button class="acc-btn" id="signOutBtn">Sign Out</button>
+    </div>
+  </div>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-storage-compat.js"></script>
+
+  <script src="app.js"></script>
+</body>
+
+</html>
