@@ -851,6 +851,66 @@ body {
   color: var(--text3);
 }
 
+/* Search Options & Toggle */
+.search-options {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  animation: fadeIn 0.8s ease backwards;
+}
+
+.toggle-switch {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+}
+
+.toggle-switch input {
+  display: none;
+}
+
+.toggle-slider {
+  width: 36px;
+  height: 20px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  position: relative;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toggle-slider::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 12px;
+  height: 12px;
+  background: var(--text3);
+  border-radius: 50%;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toggle-switch input:checked+.toggle-slider {
+  background: rgba(108, 99, 255, 0.2);
+  border-color: var(--accent);
+}
+
+.toggle-switch input:checked+.toggle-slider::after {
+  left: 19px;
+  background: var(--accent);
+  box-shadow: 0 0 10px var(--accent);
+}
+
+.toggle-label {
+  font-size: 13px;
+  color: var(--text2);
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
 /* Shortcut Chips */
 .search-shortcuts {
   display: flex;
@@ -2398,6 +2458,23 @@ kbd {
 
 .ai-text strong {
   color: var(--accent2);
+}
+
+.ai-loading {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--text3);
+  font-size: 14px;
+}
+
+.ai-label {
+  margin-top: 16px;
+  font-size: 10px;
+  color: var(--text3);
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  opacity: 0.5;
 }
 
 .loader-skeleton {
